@@ -1571,6 +1571,16 @@ class Building(object):
 
   @staticmethod
   def configure(args, stdout=None, stderr=None, env=None, cflags=[], **kwargs):
+    '''
+    if not('--no-stubs' in args):
+      cflags += ['-DEM_USE_SIG_STUBS']
+    else:
+      print(args)
+      args.remove('--no-stubs')
+      print(':')
+      print(args)
+      print('\nno stubs!\n\n')
+    '''
     if env:
       env = env.copy()
     else:

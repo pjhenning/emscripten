@@ -195,9 +195,9 @@ int __libc_current_sigrtmax(void);
 
 #define SIGRTMIN  (__libc_current_sigrtmin())
 #define SIGRTMAX  (__libc_current_sigrtmax())
-
-int kill(pid_t, int);
 #endif
+int kill(pid_t, int);
+
 
 int sigemptyset(sigset_t *);
 int sigfillset(sigset_t *);
