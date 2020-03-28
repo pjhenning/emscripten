@@ -189,6 +189,7 @@ struct sigevent {
 #define SIGEV_NONE 1
 #define SIGEV_THREAD 2
 
+#if defined(EM_USE_SIG_STUBS)
 int __libc_current_sigrtmin(void);
 int __libc_current_sigrtmax(void);
 
@@ -196,6 +197,7 @@ int __libc_current_sigrtmax(void);
 #define SIGRTMAX  (__libc_current_sigrtmax())
 
 int kill(pid_t, int);
+#endif
 
 int sigemptyset(sigset_t *);
 int sigfillset(sigset_t *);
@@ -203,9 +205,13 @@ int sigaddset(sigset_t *, int);
 int sigdelset(sigset_t *, int);
 int sigismember(const sigset_t *, int);
 
+#if defined(EM_USE_SIG_STUBS)
 int sigprocmask(int, const sigset_t *__restrict, sigset_t *__restrict);
+#endif
 int sigsuspend(const sigset_t *);
+#if defined(EM_USE_SIG_STUBS)
 int sigaction(int, const struct sigaction *__restrict, struct sigaction *__restrict);
+#endif
 int sigpending(sigset_t *);
 int sigwait(const sigset_t *__restrict, int *__restrict);
 int sigwaitinfo(const sigset_t *__restrict, siginfo_t *__restrict);
@@ -221,11 +227,15 @@ void psignal(int, const char *);
 #endif
 
 #if defined(_XOPEN_SOURCE) || defined(_BSD_SOURCE) || defined(_GNU_SOURCE)
+#if defined(EM_USE_SIG_STUBS)
 int killpg(pid_t, int);
+#endif
 int sigaltstack(const stack_t *__restrict, stack_t *__restrict);
 int sighold(int);
 int sigignore(int);
+#if defined(EM_USE_SIG_STUBS)
 int siginterrupt(int, int);
+#endif
 int sigpause(int);
 int sigrelse(int);
 void (*sigset(int, void (*)(int)))(int);
@@ -264,7 +274,9 @@ int sigandset(sigset_t *, const sigset_t *, const sigset_t *);
 typedef int sig_atomic_t;
 
 void (*signal(int, void (*)(int)))(int);
+#if defined(EM_USE_SIG_STUBS)
 int raise(int);
+#endif
 
 #ifdef __cplusplus
 }
