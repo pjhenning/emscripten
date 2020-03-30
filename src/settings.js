@@ -60,6 +60,11 @@
 // ASSERTIONS == 2 gives even more runtime checks
 var ASSERTIONS = 1;
 
+var SIG_STUBS = 0;
+var SIG_STUBS_SIGNAL = 0;
+var SIG_STUBS_SIGACTION = 0;
+var SIG_STUBS_RAISE = 0;
+
 // Whether extra logging should be enabled.
 // This logging isn't quite assertion-quality in that it isn't necessarily a
 // symptom that something is wrong.

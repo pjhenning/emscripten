@@ -8,6 +8,7 @@ var funs = {
   _sigalrm_handler: 0,
 
   signal__deps: ['_sigalrm_handler'],
+#if SIG_STUBS_SIGNAL
   signal: function(sig, func) {
     if (sig == 14 /*SIGALRM*/) {
       __sigalrm_handler = func;
@@ -18,6 +19,7 @@ var funs = {
     }
     return 0;
   },
+#endif
   sigemptyset: function(set) {
     {{{ makeSetValue('set', '0', '0', 'i32') }}};
     return 0;
@@ -37,6 +39,7 @@ var funs = {
   sigismember: function(set, signum) {
     return {{{ makeGetValue('set', '0', 'i32') }}} & (1 << (signum-1));
   },
+#if SIG_STUBS_SIGACTION
   sigaction: function(signum, act, oldact) {
     //int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
 #if ASSERTIONS
@@ -44,25 +47,33 @@ var funs = {
 #endif
     return 0;
   },
+#endif
+#if SIG_STUBS
   sigprocmask: function() {
 #if ASSERTIONS
     err('Calling stub instead of sigprocmask()');
 #endif
     return 0;
   },
+#endif
+#if SIG_STUBS
   __libc_current_sigrtmin: function() {
 #if ASSERTIONS
     err('Calling stub instead of __libc_current_sigrtmin');
 #endif
     return 0;
   },
+#endif
+#if SIG_STUBS
   __libc_current_sigrtmax: function() {
 #if ASSERTIONS
     err('Calling stub instead of __libc_current_sigrtmax');
 #endif
     return 0;
   },
+#endif
   kill__deps: ['$ERRNO_CODES', '__setErrNo'],
+#if SIG_STUBS
   kill: function(pid, sig) {
     // http://pubs.opengroup.org/onlinepubs/000095399/functions/kill.html
     // Makes no sense in a single-process environment.
@@ -73,8 +84,9 @@ var funs = {
     ___setErrNo(ERRNO_CODES.EPERM);
     return -1;
   },
-
+#endif
   killpg__deps: ['$ERRNO_CODES', '__setErrNo'],
+#if SIG_STUBS
   killpg: function() {
 #if ASSERTIONS
     err('Calling stub instead of killpg()');
@@ -82,14 +94,17 @@ var funs = {
     ___setErrNo(ERRNO_CODES.EPERM);
     return -1;
   },
+#endif
+#if SIG_STUBS
   siginterrupt: function() {
 #if ASSERTIONS
     err('Calling stub instead of siginterrupt()');
 #endif
     return 0;
   },
-
+#endif
   raise__deps: ['$ERRNO_CODES', '__setErrNo'],
+#if SIG_STUBS_RAISE
   raise: function(sig) {
 #if ASSERTIONS
     err('Calling stub instead of raise()');
@@ -100,7 +115,7 @@ var funs = {
 #endif
     return -1;
   },
-
+#endif
   // http://pubs.opengroup.org/onlinepubs/000095399/functions/alarm.html
   alarm__deps: ['_sigalrm_handler'],
   alarm: function(seconds) {
@@ -119,6 +134,7 @@ var funs = {
   },
 
   pause__deps: ['__setErrNo', '$ERRNO_CODES'],
+#if SIG_STUBS
   pause: function() {
     // int pause(void);
     // http://pubs.opengroup.org/onlinepubs/000095399/functions/pause.html
@@ -129,6 +145,7 @@ var funs = {
     ___setErrNo(ERRNO_CODES.EINTR);
     return -1;
   },
+#endif
 #if SUPPORT_LONGJMP
 #if ASSERTIONS
   siglongjmp__deps: ['longjmp'],
