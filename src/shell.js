@@ -123,7 +123,26 @@ function locateFile(path) {
 var read_,
     readAsync,
     readBinary,
-    setWindowTitle;
+		setWindowTitle;
+
+#if EMTERPRETIFY_ASYNC
+Module.emterpreter = {};
+Module.emterpreter['notifyAbout'] = function(identifier) {
+	if (!EmterpreterAsync.blockingEvents.hasOwnProperty(identifier)) {
+		EmterpreterAsync.blockingEvents[identifier] = {};
+		EmterpreterAsync.blockingEvents[identifier].notify_count = 0;
+	}
+
+	if (EmterpreterAsync.blockingEvents[identifier].notify_count == -1) {
+		var resume = EmterpreterAsync.blockingEvents[identifier].raw_resume_handler;
+		EmterpreterAsync.blockingEvents[identifier].notify_count = 0;
+		EmterpreterAsync.blockingEvents[identifier].raw_resume_handler = undefined;
+		resume();
+	} else {
+		EmterpreterAsync.blockingEvents[identifier].notify_count += 1;
+	}
+};
+#endif
 
 #if ENVIRONMENT_MAY_BE_NODE
 var nodeFS;

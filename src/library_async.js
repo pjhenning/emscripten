@@ -278,6 +278,7 @@ mergeInto(LibraryManager.library, {
                        // a single one (and not a stack) is required because only one async ccall can be
                        // in flight at once.
     asyncFinalizers: [], // functions to run when *all* asynchronicity is done
+		blockingEvents: {},
 
     ensureInit: function() {
       if (this.initted) return;
@@ -423,6 +424,27 @@ mergeInto(LibraryManager.library, {
   emscripten_sleep_with_yield: function(ms) {
     EmterpreterAsync.handle(function(resume) {
       Browser.safeSetTimeout(resume, ms);
+    }, true);
+	},
+	
+	emscripten_emterpreter_block_on__deps: ['$EmterpreterAsync'],
+  emscripten_emterpreter_block_on: function(identifier) {
+    identifier = Pointer_stringify(identifier);
+    EmterpreterAsync.handle(function(resume) {
+      if (!EmterpreterAsync.blockingEvents.hasOwnProperty(identifier)) {
+        EmterpreterAsync.blockingEvents[identifier] = {};
+        EmterpreterAsync.blockingEvents[identifier].notify_count = 0;
+      }
+
+      // ASSERT: notify_count != -1 (...because we're running somehow!)
+      if (EmterpreterAsync.blockingEvents[identifier].notify_count == 0) {
+        EmterpreterAsync.blockingEvents[identifier].notify_count = -1;
+        EmterpreterAsync.blockingEvents[identifier].raw_resume_handler = resume;
+      } else {
+        EmterpreterAsync.blockingEvents[identifier].notify_count -= 1;
+        EmterpreterAsync.blockingEvents[identifier].raw_resume_handler = undefined;
+        resume();
+      }
     }, true);
   },
 
